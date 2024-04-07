@@ -1,6 +1,9 @@
 const form = document.getElementById('control-row');
 const input = document.getElementById('input');
 const message = document.getElementById('message');
+const cookieList = document.getElementById('cookie-list');
+const prompt = "List down the cookies as a table with the link, cookie name, type, and basic summary"
+
 
 // The async IIFE is necessary because Chrome <89 does not support top level await.
 (async function initPopupWindow() {
@@ -10,6 +13,8 @@ const message = document.getElementById('message');
     try {
       let url = new URL(tab.url);
       input.value = url.hostname;
+      // Fetch cookies and display them
+      displayCookies(url.hostname);
     } catch {
       // ignore
     }
@@ -17,6 +22,25 @@ const message = document.getElementById('message');
 
   input.focus();
 })();
+
+async function displayCookies(domain) {
+  try {
+    const cookies = await chrome.cookies.getAll({ domain });
+
+    cookieList.textContent = ''; // Clear any existing cookie info
+    cookies.forEach(cookie => {
+      const cookieItem = document.createElement('div');
+      cookieItem.textContent = `Name: ${cookie.name}, Value: ${cookie.value}`;
+      cookieList.appendChild(cookieItem);
+    });
+
+    if (cookies.length === 0) {
+      cookieList.textContent = 'No cookies found';
+    }
+  } catch (error) {
+    cookieList.textContent = `Unexpected error: ${error.message}`; 
+  }
+}
 
 form.addEventListener('submit', handleFormSubmit);
 
@@ -34,6 +58,41 @@ async function handleFormSubmit(event) {
   let message = await deleteDomainCookies(url.hostname);
   setMessage(message);
 }
+
+async function explainCookies(cookies) {
+  // Check if there are any cookies to explain
+  if (cookies.length === 0) {
+    console.log("No cookies to explain.");
+    return;
+  }
+
+  // Create a description of the cookies
+  let cookieDescriptions = cookies.map(cookie => {
+    return `Name: ${cookie.name}, Domain: ${cookie.domain}, Path: ${cookie.path}, Secure: ${cookie.secure}, HTTP Only: ${cookie.httpOnly}`;
+  }).join('; ');
+
+  // Formulate a prompt for the GPT model
+  let prompt = `I have a list of web cookies with their properties: ${cookieDescriptions}. Can you explain the purpose of these cookies and what the implications are for user privacy?`;
+
+  // This is where you would call the GPT API with the prompt
+  // Since I can't actually call the API, this is a placeholder for where you would do it.
+  let gptResponse = await callGptApi(prompt);
+
+  // Process the GPT response and do something with it, for example, log it or display it in the UI
+  console.log(gptResponse);
+}
+
+async function callGptApi(prompt) {
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].text.trim();
+}
+
+
 
 function stringToUrl(input) {
   // Start with treating the provided value as a URL

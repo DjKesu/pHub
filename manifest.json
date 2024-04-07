@@ -6,9 +6,20 @@
   "permissions": ["cookies"],
   "host_permissions": ["<all_urls>"],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/eyeball.png",
+      "48": "icons/eyeball.png",
+      "128": "icons/eyeball.png"
+    }
   },
   "background": {
     "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/eyeball.png",
+    "48": "icons/eyeball.png",
+    "128": "icons/eyeball.png"
   }
+
 }

@@ -23,6 +23,7 @@ chrome.action.onClicked.addListener((tab) => {
         if (tabs[0] && tabs[0].url) {
           let url = new URL(tabs[0].url);
           let domain = url.hostname;
+          console.log("Sending domain to popup:", domain);
           sendResponse({ domain: domain });
         }
       });

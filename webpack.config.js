@@ -30,7 +30,7 @@ module.exports = {
       patterns: [
         { from: "manifest.json", to: "manifest.json" },
         { from: "popup.html", to: "popup.html" },
-        { from: "background.js", to: "background.bundle.js" }, 
+        { from: "background.js", to: "background.js" }, 
       ],
     }),
   ],
